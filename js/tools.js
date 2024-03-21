@@ -11,13 +11,13 @@ export function loadMCParticles(jsonData, eventNum,
     box.pdg = particle.PDG;
     box.genStatus = particle.generatorStatus;
     box.simStatus = particle.simulatorStatus;
-    box.momentum = Math.sqrt(Math.pow(particle.momentum.x, 2),
-                             Math.pow(particle.momentum.y, 2),
-                             Math.pow(particle.momentum.z, 2));
+    box.momentum = Math.sqrt(Math.pow(particle.momentum.x, 2)
+                             + Math.pow(particle.momentum.y, 2)
+                             + Math.pow(particle.momentum.z, 2));
     box.momentum = Math.round(box.momentum * 100) / 100;
-    box.vertex = Math.sqrt(Math.pow(particle.vertex.x, 2),
-                           Math.pow(particle.vertex.y, 2),
-                           Math.pow(particle.vertex.z, 2));
+    box.vertex = Math.sqrt(Math.pow(particle.vertex.x, 2)
+                           + Math.pow(particle.vertex.y, 2)
+                           + Math.pow(particle.vertex.z, 2));
     box.vertex = Math.round(box.vertex * 100) / 100;
     box.px = Math.round(particle.momentum.x * 100) / 100;
     box.py = Math.round(particle.momentum.y * 100) / 100;
