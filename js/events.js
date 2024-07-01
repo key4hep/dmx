@@ -1,4 +1,4 @@
-import { canvas, ctx } from "./main.js";
+import { canvas } from "./main.js";
 import { drawAll, drawVisible } from "./draw.js";
 
 const mouseDown = function (event, visibleObjects, dragTools) {
@@ -10,7 +10,7 @@ const mouseDown = function (event, visibleObjects, dragTools) {
   dragTools.prevMouseX = mouseX;
   dragTools.prevMouseY = mouseY;
 
-  for (const { collection } of Object.values(visibleObjects)) {
+  for (const { collection } of Object.values(visibleObjects.datatypes)) {
     for (const object of collection) {
       if (object.isHere(mouseX, mouseY)) {
         dragTools.draggedObject = object;
@@ -30,7 +30,7 @@ const mouseUp = function (event, currentObjects, dragTools) {
   dragTools.isDragging = false;
 
   // console.time("drawAll");
-  drawAll(ctx, currentObjects);
+  drawAll(currentObjects);
   // console.timeEnd("drawAll");
 };
 
@@ -47,7 +47,6 @@ const mouseMove = function (event, visibleObjects, dragTools) {
   if (!dragTools.isDragging) {
     return;
   }
-  event.preventDefault();
 
   const boundigClientRect = canvas.getBoundingClientRect();
   const mouseX = parseInt(event.clientX - boundigClientRect.x);
@@ -60,9 +59,7 @@ const mouseMove = function (event, visibleObjects, dragTools) {
   draggedObject.x += dx;
   draggedObject.y += dy;
 
-  // console.time("drawVisible");
   drawVisible(visibleObjects);
-  // console.timeEnd("drawVisible");
 
   dragTools.prevMouseX = mouseX;
   dragTools.prevMouseY = mouseY;
@@ -71,10 +68,14 @@ const mouseMove = function (event, visibleObjects, dragTools) {
 const getVisible = function (loadedObjects, visibleObjects) {
   const boundigClientRect = canvas.getBoundingClientRect();
 
-  for (const [objectType, elements] of Object.entries(loadedObjects)) {
+  visibleObjects.datatypes = {};
+  visibleObjects.associations = {};
+  for (const [objectType, elements] of Object.entries(
+    loadedObjects.datatypes ?? {}
+  )) {
     const { collection, oneToMany, oneToOne } = elements;
 
-    visibleObjects[objectType] = {
+    visibleObjects.datatypes[objectType] = {
       collection: [],
       oneToMany: {},
       oneToOne: {},
@@ -89,12 +90,12 @@ const getVisible = function (loadedObjects, visibleObjects) {
           window.innerHeight
         )
       ) {
-        visibleObjects[objectType].collection.push(object);
+        visibleObjects.datatypes[objectType].collection.push(object);
       }
     }
 
     for (const [name, links] of Object.entries(oneToMany)) {
-      visibleObjects[objectType].oneToMany[name] = [];
+      visibleObjects.datatypes[objectType].oneToMany[name] = [];
 
       for (const link of links) {
         if (
@@ -105,13 +106,13 @@ const getVisible = function (loadedObjects, visibleObjects) {
             window.innerHeight
           )
         ) {
-          visibleObjects[objectType].oneToMany[name].push(link);
+          visibleObjects.datatypes[objectType].oneToMany[name].push(link);
         }
       }
     }
 
     for (const [name, links] of Object.entries(oneToOne)) {
-      visibleObjects[objectType].oneToOne[name] = null;
+      visibleObjects.datatypes[objectType].oneToOne[name] = [];
 
       for (const link of links) {
         if (
@@ -122,8 +123,27 @@ const getVisible = function (loadedObjects, visibleObjects) {
             window.innerHeight
           )
         ) {
-          visibleObjects[objectType].oneToOne[name] = link;
+          visibleObjects.datatypes[objectType].oneToOne[name].push(link);
         }
+      }
+    }
+  }
+
+  for (const [name, links] of Object.entries(
+    loadedObjects.associations ?? {}
+  )) {
+    visibleObjects.associations[name] = [];
+
+    for (const link of links) {
+      if (
+        link.isVisible(
+          0 - boundigClientRect.x,
+          0 - boundigClientRect.y,
+          window.innerWidth,
+          window.innerHeight
+        )
+      ) {
+        visibleObjects.associations[name].push(link);
       }
     }
   }

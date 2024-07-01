@@ -46,9 +46,11 @@ export const datatypes = {
     ],
     "oneToManyRelations": [
       {
+        "type": "edm4hep::MCParticle",
         "name": "parents"
       },
       {
+        "type": "edm4hep::MCParticle",
         "name": "daughters"
       }
     ]
@@ -70,6 +72,7 @@ export const datatypes = {
     ],
     "oneToOneRelations": [
       {
+        "type": "edm4hep::ReconstructedParticle",
         "name": "particle"
       }
     ]
@@ -107,9 +110,11 @@ export const datatypes = {
     ],
     "oneToManyRelations": [
       {
+        "type": "edm4hep::Cluster",
         "name": "clusters"
       },
       {
+        "type": "edm4hep::CalorimeterHit",
         "name": "hits"
       }
     ]
@@ -137,9 +142,11 @@ export const datatypes = {
     ],
     "oneToManyRelations": [
       {
+        "type": "edm4hep::TrackerHit",
         "name": "trackerHits"
       },
       {
+        "type": "edm4hep::Track",
         "name": "tracks"
       }
     ]
@@ -167,6 +174,7 @@ export const datatypes = {
     ],
     "oneToOneRelations": [
       {
+        "type": "edm4hep::ReconstructedParticle",
         "name": "associatedParticle"
       }
     ]
@@ -204,18 +212,39 @@ export const datatypes = {
     ],
     "oneToManyRelations": [
       {
+        "type": "edm4hep::Cluster",
         "name": "clusters"
       },
       {
+        "type": "edm4hep::Track",
         "name": "tracks"
       },
       {
+        "type": "edm4hep::ReconstructedParticle",
         "name": "particles"
       }
     ],
     "oneToOneRelations": [
       {
+        "type": "edm4hep::Vertex",
         "name": "startVertex"
+      }
+    ]
+  },
+  "edm4hep::MCRecoParticleAssociation": {
+    "members": [
+      {
+        "name": "weight"
+      }
+    ],
+    "oneToOneRelations": [
+      {
+        "type": "edm4hep::ReconstructedParticle",
+        "name": "rec"
+      },
+      {
+        "type": "edm4hep::MCParticle",
+        "name": "sim"
       }
     ]
   }

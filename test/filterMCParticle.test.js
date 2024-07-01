@@ -5,20 +5,20 @@ import {
   Checkbox,
   buildCriteriaFunction,
 } from "../js/menu/filter/parameters.js";
-import { CheckboxBuilder } from "../js/menu/filter/builders.js";
 
 let objects = {};
 
 const data = {
   "Event 0": {
     "Collection": {
+      "collID": 0,
       "collType": "edm4hep::MCParticleCollection",
       "collection": [
         {
           "momentum": 0,
           "charge": 0,
           "mass": 0,
-          "simStatus": 70,
+          "simulatorStatus": 70,
           "parents": [],
           "daughters": [
             {
@@ -31,7 +31,7 @@ const data = {
           "momentum": 100,
           "charge": 1,
           "mass": 10,
-          "simStatus": 24,
+          "simulatorStatus": 24,
           "daughters": [
             {
               "collectionID": 0,
@@ -49,7 +49,7 @@ const data = {
           "momentum": 200,
           "charge": 2,
           "mass": 20,
-          "simStatus": 25,
+          "simulatorStatus": 25,
           "daughters": [
             {
               "collectionID": 0,
@@ -67,7 +67,7 @@ const data = {
           "momentum": 300,
           "charge": 3,
           "mass": 30,
-          "simStatus": 26,
+          "simulatorStatus": 26,
           "daughters": [
             {
               "collectionID": 0,
@@ -85,7 +85,7 @@ const data = {
           "momentum": 400,
           "charge": 4,
           "mass": 40,
-          "simStatus": 27,
+          "simulatorStatus": 27,
           "parents": [
             {
               "collectionID": 0,
@@ -121,8 +121,8 @@ describe("filter by ranges", () => {
     const filteredObjects = reconnect(criteriaFunction, objects);
 
     expect(
-      filteredObjects["edm4hep::MCParticle"].collection.map(
-        (mcParticle) => mcParticle.id
+      filteredObjects.datatypes["edm4hep::MCParticle"].collection.map(
+        (mcParticle) => mcParticle.index
       )
     ).toEqual([3, 4]);
   });
@@ -145,8 +145,8 @@ describe("filter by ranges", () => {
     const filteredObjects = reconnect(criteriaFunction, objects);
 
     expect(
-      filteredObjects["edm4hep::MCParticle"].collection.map(
-        (mcParticle) => mcParticle.id
+      filteredObjects.datatypes["edm4hep::MCParticle"].collection.map(
+        (mcParticle) => mcParticle.index
       )
     ).toEqual([3, 4]);
   });
@@ -154,7 +154,7 @@ describe("filter by ranges", () => {
 
 describe("filter by checkboxes", () => {
   it("filter by a single checkbox", () => {
-    const simulatorStatus = new Checkbox("simStatus", 23);
+    const simulatorStatus = new Checkbox("simulatorStatus", 23);
     simulatorStatus.checked = true;
     const checkboxFilters = Checkbox.buildFilter([simulatorStatus]);
     const criteriaFunction = buildCriteriaFunction(checkboxFilters);
@@ -162,18 +162,18 @@ describe("filter by checkboxes", () => {
     const filteredObjects = reconnect(criteriaFunction, objects);
 
     expect(
-      filteredObjects["edm4hep::MCParticle"].collection.map(
-        (mcParticle) => mcParticle.id
+      filteredObjects.datatypes["edm4hep::MCParticle"].collection.map(
+        (mcParticle) => mcParticle.index
       )
     ).toEqual([]);
   });
 
   it("filter by a combination of checkboxes", () => {
-    const simulatorStatus1 = new Checkbox("simStatus", 23);
+    const simulatorStatus1 = new Checkbox("simulatorStatus", 23);
     simulatorStatus1.checked = true;
-    const simulatorStatus2 = new Checkbox("simStatus", 26);
+    const simulatorStatus2 = new Checkbox("simulatorStatus", 26);
     simulatorStatus2.checked = true;
-    const simulatorStatus3 = new Checkbox("simStatus", 27);
+    const simulatorStatus3 = new Checkbox("simulatorStatus", 27);
     simulatorStatus3.checked = true;
     const checkboxFilters = Checkbox.buildFilter([
       simulatorStatus1,
@@ -185,10 +185,10 @@ describe("filter by checkboxes", () => {
     const filteredObjects = reconnect(criteriaFunction, objects);
 
     expect(
-      filteredObjects["edm4hep::MCParticle"].collection.map(
-        (mcParticle) => mcParticle.id
+      filteredObjects.datatypes["edm4hep::MCParticle"].collection.map(
+        (mcParticle) => mcParticle.index
       )
-    ).toEqual([]);
+    ).toEqual([3, 4]);
   });
 });
 
@@ -198,7 +198,7 @@ describe("filter by ranges and checkboxes", () => {
       property: "charge",
       unit: "e",
     });
-    const simulatorStatus = new Checkbox("simStatus", 26);
+    const simulatorStatus = new Checkbox("simulatorStatus", 26);
     const rangeFilters = Range.buildFilter([charge]);
     const checkboxFilters = Checkbox.buildFilter([simulatorStatus]);
     const criteriaFunction = buildCriteriaFunction(
@@ -209,8 +209,8 @@ describe("filter by ranges and checkboxes", () => {
     const filteredObjects = reconnect(criteriaFunction, objects);
 
     expect(
-      filteredObjects["edm4hep::MCParticle"].collection.map(
-        (mcParticle) => mcParticle.id
+      filteredObjects.datatypes["edm4hep::MCParticle"].collection.map(
+        (mcParticle) => mcParticle.index
       )
     ).toEqual([0, 1, 2, 3, 4]);
   });
@@ -221,7 +221,7 @@ describe("filter by ranges and checkboxes", () => {
       unit: "e",
     });
     charge.max = 3;
-    const simulatorStatus = new Checkbox("simStatus", 23);
+    const simulatorStatus = new Checkbox("simulatorStatus", 23);
     simulatorStatus.checked = true;
     const rangeFilters = Range.buildFilter([charge]);
     const checkboxFilters = Checkbox.buildFilter([simulatorStatus]);
@@ -233,8 +233,8 @@ describe("filter by ranges and checkboxes", () => {
     const filteredObjects = reconnect(criteriaFunction, objects);
 
     expect(
-      filteredObjects["edm4hep::MCParticle"].collection.map(
-        (mcParticle) => mcParticle.id
+      filteredObjects.datatypes["edm4hep::MCParticle"].collection.map(
+        (mcParticle) => mcParticle.index
       )
     ).toEqual([]);
   });

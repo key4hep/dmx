@@ -6,6 +6,8 @@ describe("MCParticle", () => {
 
   beforeEach(() => {
     mcParticle = new MCParticle(1);
+    mcParticle.x = 0;
+    mcParticle.y = 0;
   });
 
   afterEach(() => {
@@ -89,7 +91,11 @@ describe("Link", () => {
 
   beforeEach(() => {
     firstObject = new MCParticle(0);
+    firstObject.x = 0;
+    firstObject.y = 0;
     secondObject = new MCParticle(1);
+    secondObject.x = 0;
+    secondObject.y = 0;
     link = new Link(firstObject, secondObject);
   });
 

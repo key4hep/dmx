@@ -1,10 +1,4 @@
 import { drawAll } from "../../draw.js";
-import {
-  ctx,
-  loadedObjects,
-  currentObjects,
-  visibleObjects,
-} from "../../main.js";
 import { CheckboxBuilder, BitFieldBuilder } from "./builders.js";
 import { Range, Checkbox, buildCriteriaFunction } from "./parameters.js";
 import { reconnect } from "./reconnect.js";
@@ -21,20 +15,6 @@ const apply = document.getElementById("filter-apply");
 const reset = document.getElementById("filter-reset");
 
 let active = false;
-
-filterButton.addEventListener("click", () => {
-  active = !active;
-
-  if (active) {
-    openFilter.style.display = "none";
-    closeFilter.style.display = "block";
-    filterContent.style.display = "flex";
-  } else {
-    openFilter.style.display = "block";
-    closeFilter.style.display = "none";
-    filterContent.style.display = "none";
-  }
-});
 
 export function renderRangeParameters(rangeParameters) {
   const rangeFilters = document.createElement("div");
@@ -115,7 +95,7 @@ function applyFilter(loadedObjects, currentObjects, visibleObjects) {
 
   copyObject(filteredObjects, currentObjects);
 
-  drawAll(ctx, currentObjects);
+  drawAll(currentObjects);
 
   getVisible(currentObjects, visibleObjects);
 }
@@ -123,7 +103,7 @@ function applyFilter(loadedObjects, currentObjects, visibleObjects) {
 function removeFilter(loadedObjects, currentObjects, visibleObjects) {
   copyObject(loadedObjects, currentObjects);
 
-  drawAll(ctx, currentObjects);
+  drawAll(currentObjects);
 
   getVisible(currentObjects, visibleObjects);
 
@@ -133,18 +113,34 @@ function removeFilter(loadedObjects, currentObjects, visibleObjects) {
   renderGenSim(bits, genStatus);
 }
 
-apply.addEventListener("click", () =>
-  applyFilter(loadedObjects, currentObjects, visibleObjects)
-);
+export function start(loadedObjects, currentObjects, visibleObjects) {
+  filterButton.addEventListener("click", () => {
+    active = !active;
 
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && active) {
-    applyFilter(loadedObjects, currentObjects, visibleObjects);
-  }
-});
+    if (active) {
+      openFilter.style.display = "none";
+      closeFilter.style.display = "block";
+      filterContent.style.display = "flex";
+    } else {
+      openFilter.style.display = "block";
+      closeFilter.style.display = "none";
+      filterContent.style.display = "none";
+    }
+  });
 
-reset.addEventListener("click", () =>
-  removeFilter(loadedObjects, currentObjects, visibleObjects)
-);
+  apply.addEventListener("click", () =>
+    applyFilter(loadedObjects, currentObjects, visibleObjects)
+  );
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && active) {
+      applyFilter(loadedObjects, currentObjects, visibleObjects);
+    }
+  });
+
+  reset.addEventListener("click", () =>
+    removeFilter(loadedObjects, currentObjects, visibleObjects)
+  );
+}
 
 export { bits, genStatus, parametersRange };

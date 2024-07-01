@@ -1,10 +1,7 @@
 import { errorMsg } from "./tools.js";
-import { PdgToggle } from "./menu/show-pdg.js";
-import { drawAll } from "./draw.js";
-import { getWidthFilterContent } from "./menu/filter/filter.js";
-import { mouseDown, mouseUp, mouseOut, mouseMove, onScroll } from "./events.js";
-import { showEventSwitcher, loadSelectedEvent } from "./menu/event-number.js";
-import { renderEvent } from "./menu/event-number.js";
+import { renderEvent } from "./event-number.js";
+import { setView, getView } from "./views/views.js";
+import { views } from "./views/views-dictionary.js";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -14,43 +11,30 @@ canvas.height = window.innerHeight;
 
 const jsonData = {};
 
-const dragTools = {
-  draggedObject: null,
-  isDragging: false,
-  prevMouseX: 0,
-  prevMouseY: 0,
-};
-
-const loadedObjects = {};
-
-const currentObjects = {};
-
-const visibleObjects = {};
-
 const selectedObjectTypes = {
-  types: ["edm4hep::MCParticle"],
-};
-
-canvas.onmousedown = (event) => {
-  mouseDown(event, visibleObjects, dragTools);
-};
-canvas.onmouseup = (event) => {
-  mouseUp(event, currentObjects, dragTools);
-};
-canvas.onmouseout = (event) => {
-  mouseOut(event, dragTools);
-};
-canvas.onmousemove = (event) => {
-  mouseMove(event, visibleObjects, dragTools);
-};
-window.onscroll = () => {
-  onScroll(currentObjects, visibleObjects);
+  types: [
+    "edm4hep::MCParticle",
+    "edm4hep::ReconstructedParticle",
+    "edm4hep::MCRecoParticleAssociation",
+  ],
 };
 
 function hideInputModal() {
   const modal = document.getElementById("input-modal");
 
   modal.style.display = "none";
+}
+
+function showEventSwitcher() {
+  const eventSwitcher = document.getElementById("event-switcher");
+
+  eventSwitcher.style.display = "flex";
+}
+
+function showViewsMenu() {
+  const viewsMenu = document.getElementById("views");
+
+  viewsMenu.style.display = "flex";
 }
 
 document.getElementById("input-file").addEventListener("change", (event) => {
@@ -97,6 +81,27 @@ document.getElementById("input-file").addEventListener("change", (event) => {
           eventSelectorMenu.style.display = "none";
         });
       });
+
+      const availableViews = document.getElementById("available-views");
+      availableViews.replaceChildren();
+      const buttons = [];
+      for (const key in views) {
+        const button = document.createElement("button");
+        button.appendChild(document.createTextNode(key));
+        button.className = "view-button";
+        button.onclick = (event) => {
+          event.preventDefault();
+          setView(key);
+          for (const otherButton of buttons) {
+            if (otherButton !== button) {
+              otherButton.style.backgroundColor = "#f1f1f1";
+            }
+          }
+          button.style.backgroundColor = "#c5c5c5";
+        };
+        buttons.push(button);
+        availableViews.appendChild(button);
+      }
     });
     reader.readAsText(file);
     break;
@@ -113,28 +118,17 @@ document
       return;
     }
 
+    if (getView() === undefined) {
+      errorMsg("No view selected!");
+      return;
+    }
+
     const eventNum = document.getElementById("event-number").value;
 
     hideInputModal();
-    showEventSwitcher(eventNum);
-    loadSelectedEvent();
-
-    const width = getWidthFilterContent();
-    filter.style.width = width;
-    const pdgToggle = new PdgToggle("show-pdg");
-    pdgToggle.init(() => {
-      pdgToggle.toggle(currentObjects, () => {
-        drawAll(ctx, currentObjects);
-      });
-    });
+    showEventSwitcher();
+    showViewsMenu();
+    renderEvent(eventNum);
   });
 
-export {
-  canvas,
-  ctx,
-  loadedObjects,
-  currentObjects,
-  visibleObjects,
-  jsonData,
-  selectedObjectTypes,
-};
+export { canvas, ctx, jsonData, selectedObjectTypes };

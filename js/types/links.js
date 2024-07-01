@@ -1,7 +1,8 @@
 export const colors = {
   "daughters": "#00AA00",
   "parents": "#AA0000",
-  // more if needed
+  "mcreco": "#0000AA",
+  "particles": "#AA00AA",
 };
 
 export function generateRandomColor() {
@@ -128,10 +129,47 @@ export class DaughterLink extends Link {
   }
 }
 
+export class MCRecoParticleAssociation extends Link {
+  constructor(from, to, weight) {
+    super(from, to);
+    this.color = colors["mcreco"];
+    this.weight = weight;
+  }
+
+  draw(ctx) {
+    const boxFrom = this.from;
+    const boxTo = this.to;
+
+    const fromX = boxFrom.x + boxFrom.width / 2;
+    const fromY = boxFrom.y + boxFrom.height / 2;
+
+    const toX = boxTo.x + boxTo.width / 2;
+    const toY = boxTo.y + boxTo.height / 2;
+
+    ctx.save();
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(toX, toY);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+export class Particles extends Link {
+  constructor(from, to) {
+    super(from, to);
+    this.color = colors["particles"];
+  }
+}
+
 export const linkTypes = {
   "parents": ParentLink,
   "daughters": DaughterLink,
   "trackerHits": Link,
   "startVertex": Link,
-  "particles": Link,
+  "particles": Particles,
+  "clusters": Link,
+  "edm4hep::MCRecoParticleAssociation": MCRecoParticleAssociation,
 };
